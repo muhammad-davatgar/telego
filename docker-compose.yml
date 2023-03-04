@@ -23,6 +23,8 @@ services:
       - "8529:8529"
     networks:
     - telego_network
+    env_file:
+      - arango.env
 
 networks:
   telego_network:
