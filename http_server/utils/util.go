@@ -11,10 +11,6 @@ type Error struct {
 	Errors map[string]interface{} `json:"errors"`
 }
 
-func (err *Error) Error() {
-
-}
-
 func NewError(err error) Error {
 	e := Error{}
 	e.Errors = make(map[string]interface{})
