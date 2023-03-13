@@ -16,15 +16,22 @@ services:
     env_file:
     - ./http_server/.env
     depends_on:
-        - arangodb
-  arangodb:
-    image: arangodb
-    ports:
-      - "8529:8529"
+        - neo4j
+  neo4j:
+    image: neo4j
     networks:
     - telego_network
+    ports:
+      - "7474:7474"
+      - "7687:7687"
     env_file:
-      - arango.env
+      - neo.env
+    volumes:
+      - $HOME/neo4j/data:/data
+  # cassandra: 
+  #   image: cassandra
+  # elasticsearch:
+  #   image: elasticsearch:8.5.3
 
 networks:
   telego_network:

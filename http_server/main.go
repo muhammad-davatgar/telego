@@ -29,7 +29,7 @@ func main() {
 
 	e.Validator = &utils.CustomValidator{Validator: validator.New()}
 
-	setup_routes(*e)
+	setup_routes(*e, &neo)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
