@@ -7,13 +7,11 @@ import (
 
 type SignUpRequest struct {
 	Username string
-	Email    string
 	Password string
 }
 
 type ValidatedSignUp struct {
 	Username string `json:"username" validate:"required,min=4,max=10"`
-	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
 }
 
@@ -24,7 +22,6 @@ func ValidateSignUp(c *echo.Context) (ValidatedSignUp, utils.Error) {
 		return validated_user, utils.NewError(err)
 	}
 
-	validated_user.Email = new_user.Email
 	validated_user.Username = new_user.Username
 	validated_user.Password = new_user.Password
 
