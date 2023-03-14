@@ -46,14 +46,14 @@ func SignUpUserQuery(neo *neo4j.DriverWithContext, user_entry ValidatedSignUp) (
 			encrypted_pass, err := EncryptPassword(user_entry.Username, user_entry.Password)
 
 			if err != nil {
-				return neo4j.Node{}, fmt.Errorf("Encrypting : %w", err)
+				return neo4j.Node{}, fmt.Errorf("encrypting : %w", err)
 			}
 
 			result, err := tx.Run(ctx,
 				`MERGE (u:User {username : $username})
 					set u.password = $password
 					return u`,
-				map[string]any{"username": user_entry.Username, "password": string(encrypted_pass)},
+				map[string]any{"username": user_entry.Username, "password": encrypted_pass},
 			)
 			if err != nil {
 				return *new(neo4j.Node), err

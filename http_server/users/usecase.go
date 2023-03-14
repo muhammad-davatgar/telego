@@ -17,33 +17,41 @@ func CreateHash(key string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func EncryptPassword(username, password string) ([]byte, error) {
+func EncryptPassword(username, password string) (string, error) {
 
 	password = CreateHash(password)
 
 	c, err := aes.NewCipher([]byte(password))
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
 	gcm, err := cipher.NewGCM(c)
 
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
-	return gcm.Seal(nonce, nonce, []byte(username), nil), nil
+	res := hex.EncodeToString(gcm.Seal(nonce, nonce, []byte(username), nil))
+
+	return res, nil
 }
 
 func VerifyPassword(username, password, encrypted_pass string) (bool, error) {
-	password = CreateHash(password)
 
+	password = CreateHash(password)
+	decoding, err := hex.DecodeString(encrypted_pass)
+	if err != nil {
+		return false, fmt.Errorf("DB Decoding : %w", err)
+	}
+
+	encrypted_pass = string(decoding)
 	block, err := aes.NewCipher([]byte(password))
 	if err != nil {
 		return false, fmt.Errorf("NewCipher : %w", err)

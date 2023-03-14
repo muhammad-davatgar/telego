@@ -11,7 +11,8 @@ func TestHashing(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res, err := VerifyPassword(username, password, string(generated_hash))
+
+	res, err := VerifyPassword(username, password, generated_hash)
 	if err != nil || res == false {
 		t.Fatal("not working : ", err)
 	}
