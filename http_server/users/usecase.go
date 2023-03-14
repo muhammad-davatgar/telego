@@ -9,6 +9,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 func CreateHash(key string) string {
@@ -78,4 +80,24 @@ func VerifyPassword(username, password, encrypted_pass string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func ValidatedUserFromMap(entry map[string]any) (ValidatedUser, error) {
+	var user ValidatedUser
+
+	config := &mapstructure.DecoderConfig{
+		ErrorUnused: false,
+		Result:      &user,
+		ErrorUnset:  true,
+	}
+
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return ValidatedUser{}, fmt.Errorf("newDecoder : %w", err)
+	}
+	if err := decoder.Decode(entry); err != nil {
+		return ValidatedUser{}, fmt.Errorf("decoding : %w", err)
+	}
+
+	return user, nil
 }

@@ -8,16 +8,15 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j/dbtype"
 )
 
-func GetUserQuery(neo *neo4j.DriverWithContext, username string) (dbtype.Node, error) {
+func GetUserQuery(neo *neo4j.DriverWithContext, username string) (ValidatedUser, error) {
 	ctx := context.Background()
 	session := (*neo).NewSession(ctx, neo4j.SessionConfig{})
 
-	user, err := neo4j.ExecuteRead(
+	data, err := neo4j.ExecuteRead(
 		ctx,
 		session,
 		func(tx neo4j.ManagedTransaction) (dbtype.Node, error) {
-			// TODO :
-			// return just profile and not password
+
 			result, err := tx.Run(ctx, "MATCH (u:User {username : $username}) return u", map[string]any{"username": username})
 			if err != nil {
 				return *new(neo4j.Node), err
@@ -32,10 +31,19 @@ func GetUserQuery(neo *neo4j.DriverWithContext, username string) (dbtype.Node, e
 		},
 	)
 
+	if err != nil {
+		return ValidatedUser{}, fmt.Errorf("query error : %w", err)
+	}
+
+	user, err := ValidatedUserFromMap(data.Props)
+	if err != nil {
+		return ValidatedUser{}, fmt.Errorf("mapping error : %w", err)
+	}
+
 	return user, err
 }
 
-func SignUpUserQuery(neo *neo4j.DriverWithContext, user_entry ValidatedSignUp) (dbtype.Node, error) {
+func SignUpUserQuery(neo *neo4j.DriverWithContext, user_entry ValidatedUser) (dbtype.Node, error) {
 	ctx := context.Background()
 	session := (*neo).NewSession(ctx, neo4j.SessionConfig{})
 

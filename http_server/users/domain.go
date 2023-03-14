@@ -10,13 +10,13 @@ type SignUpRequest struct {
 	Password string
 }
 
-type ValidatedSignUp struct {
+type ValidatedUser struct {
 	Username string `json:"username" validate:"required,min=4,max=10"`
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-func ValidateSignUp(c *echo.Context) (ValidatedSignUp, utils.Error) {
-	new_user, validated_user := new(SignUpRequest), ValidatedSignUp{}
+func ValidateSignUp(c *echo.Context) (ValidatedUser, utils.Error) {
+	new_user, validated_user := new(SignUpRequest), ValidatedUser{}
 	var err error
 	if err = (*c).Bind(new_user); err != nil {
 		return validated_user, utils.NewError(err)

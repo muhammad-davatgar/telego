@@ -7,7 +7,11 @@ import (
 )
 
 func setup_routes(app echo.Echo, neo *neo4j.DriverWithContext) {
-	users_group := app.Group("/users")
-	users_group.GET("/:username", users.GetUser(neo))
-	users_group.POST("", users.SignUp(neo))
+	api := app.Group("/api")
+
+	users_group := api.Group("/users")
+	users_group.GET("/username/:username", users.GetUser(neo))
+	users_group.POST("/", users.SignUp(neo))
+	users_group.POST("/login", users.LogIn(neo))
+	// users_group.POST("/token", users)
 }
